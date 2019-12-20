@@ -3,6 +3,8 @@ package com.sabapathy.tutorial;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.context.request.RequestContextListener;
 
 @Slf4j
 
@@ -13,4 +15,8 @@ public class TutorialApplication {
 		SpringApplication.run(TutorialApplication.class, args);
 	}
 
+	@Bean
+	public RequestContextListener requestContextListener() {
+		return new RequestContextListener();
+	}
 }

@@ -23,5 +23,8 @@ public class MvcUserRequest {
     @NotNull(message = "{MvcUserRequest.password.notnull}")
     private String password;
 
+    @NotNull(message = "{MvcUserRequest.captcha.notnull}")
+    private String captcha;
+
     private Set<MvcRoleRequest> roles;
 }

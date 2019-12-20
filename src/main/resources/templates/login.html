@@ -27,11 +27,11 @@
             <td><input type="password" id="password" name="password" placeholder="password" required="required" th:field="*{password}" /></td>
         </tr>
         <tr>
-            <td>Captcha here</td>
-            <td></td>
+            <td><img src="captcha" th:src="@{/tutorial/captcha}"></td>
+            <td><input type="text" id="captcha" name="captcha" placeholder="captcha" required="required" th:field="*{captcha}" /></td>
         </tr>
         <tr>
-            <td><input type="reset" value="Reset" class="button"/></td>
+            <td><input align="right" type="reset" value="Reset" class="button"/></td>
             <td><input type="submit" value="Submit" class="button"/></td>
         </tr>
         <tr></tr>

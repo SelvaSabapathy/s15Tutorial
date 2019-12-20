@@ -13,9 +13,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.RequestContextListener;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -32,18 +36,41 @@ public class MvcLoginController {
     @Autowired
     private UserService userService;
 
+    private void createSession() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        request.getSession();
+    }
+
+    private boolean verifyCaptcha() {
+        log.debug("Verifying the captcha...");
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        Object generatedCaptcha = request.getSession().getAttribute("captchaSecurityCode");
+
+        String userEnteredCaptcha = request.getParameter("captcha");
+        return generatedCaptcha == null || userEnteredCaptcha.equals(generatedCaptcha);
+    }
+
     @GetMapping("/register")
     public ModelAndView register() {
+        createSession();
         return new ModelAndView("register", "register", new MvcUserRequest());
     }
 
     @PostMapping(value = "/save")
     public String save(@Valid @ModelAttribute("register") MvcUserRequest mvcUserRequest, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        createSession();
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("message", "Error - " + bindingResult.getFieldErrors().get(0).getDefaultMessage());
             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
             return "redirect:register";
         }
+
+        if (verifyCaptcha()) {
+            redirectAttributes.addFlashAttribute("message", "Error - Captcha entered is incorrect");
+            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+            return "redirect:register";
+        }
+
         log.debug("MVC User Request: " + mvcUserRequest);
 
         mvcUserRequest.setRoles(new HashSet<MvcRoleRequest>(Arrays.asList(new MvcRoleRequest("USER"))));
