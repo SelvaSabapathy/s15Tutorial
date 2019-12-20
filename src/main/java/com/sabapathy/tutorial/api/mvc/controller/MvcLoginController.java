@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -36,36 +35,29 @@ public class MvcLoginController {
     @Autowired
     private UserService userService;
 
-    private void createSession() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        request.getSession();
-    }
-
-    private boolean verifyCaptcha() {
+    private boolean isCaptchaMatching() {
         log.debug("Verifying the captcha...");
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         Object generatedCaptcha = request.getSession().getAttribute("captchaSecurityCode");
 
         String userEnteredCaptcha = request.getParameter("captcha");
-        return generatedCaptcha == null || userEnteredCaptcha.equals(generatedCaptcha);
+        return userEnteredCaptcha.equals(generatedCaptcha);
     }
 
     @GetMapping("/register")
     public ModelAndView register() {
-        createSession();
         return new ModelAndView("register", "register", new MvcUserRequest());
     }
 
     @PostMapping(value = "/save")
     public String save(@Valid @ModelAttribute("register") MvcUserRequest mvcUserRequest, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        createSession();
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("message", "Error - " + bindingResult.getFieldErrors().get(0).getDefaultMessage());
             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
             return "redirect:register";
         }
 
-        if (verifyCaptcha()) {
+        if (!isCaptchaMatching()) {
             redirectAttributes.addFlashAttribute("message", "Error - Captcha entered is incorrect");
             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
             return "redirect:register";
