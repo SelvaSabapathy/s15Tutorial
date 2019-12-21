@@ -17,31 +17,32 @@
 
     <form action="/tutorial/auth" th:action="@{auth}" th:object="${login}" method="POST">
 
-    <table align="center">
-        <tr>
-            <td>Username: </td>
-            <td><input type="text" id="username" name="username" placeholder="username" required="required" th:field="*{username}" /></td>
-        </tr>
-        <tr>
-            <td>Password:</td>
-            <td><input type="password" id="password" name="password" placeholder="password" required="required" th:field="*{password}" /></td>
-        </tr>
-        <tr>
-            <td><img src="captcha" th:src="@{/tutorial/captcha}"></td>
-            <td><input type="text" id="captcha" name="captcha" placeholder="captcha" required="required" th:field="*{captcha}" /></td>
-        </tr>
-        <tr>
-            <td><input align="right" type="reset" value="Reset" class="button"/></td>
-            <td><input type="submit" value="Submit" class="button"/></td>
-        </tr>
-        <tr></tr>
-        <tr>
-            <td></td>
-            <td><a th:href="@{/tutorial}" href="home.html">Home</a></td>
-            <td></td>
-        </tr>
-        <div id="errormsg" th:errors="*{password}">Password Length</div>
-    </table>
+        <table align="center">
+            <tr>
+                <td>Username: </td>
+                <td><input type="text" id="username" name="username" placeholder="username" required="required" th:field="*{username}" /></td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td><input type="password" id="password" name="password" placeholder="password" required="required" th:field="*{password}" /></td>
+            </tr>
+            <tr>
+                <td><img src="captcha" th:src="@{/tutorial/captcha}"></td>
+                <td><input type="text" id="captcha" name="captcha" placeholder="captcha" required="required" th:field="*{captcha}" /></td>
+            </tr>
+            <tr>
+                <td><input align="right" type="reset" value="Reset" class="button"/></td>
+                <td><input type="submit" value="Submit" class="button"/></td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <td></td>
+                <td><a th:href="@{/tutorial}" href="home.html">Home</a></td>
+                <td></td>
+            </tr>
+        </table>
+        <div align="center" th:if="${message}" th:text="${message}" th:class="${'alert ' + alertClass}"/>
+    </form>
 
     <div th:replace="fragments/page::footer">Site-wide Page Footer</div>
 

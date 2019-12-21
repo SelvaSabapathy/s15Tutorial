@@ -33,11 +33,9 @@ public class LoginServiceImpl implements LoginService {
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
 
-        if (userDetails.isEnabled()) {
-            if (userDetails.getPassword().equals(bCryptPasswordEncoder.encode(user.getPassword()))) {
-                return ((UserDetailsImpl) userDetails).getUser();
-            }
+        if (bCryptPasswordEncoder.matches(user.getPassword(), userDetails.getPassword())) {
+            return ((UserDetailsImpl) userDetails).getUser();
         }
-        throw new RuntimeException("User not found!");
+        throw new RuntimeException("Password for " + user.getUsername() + " don't match!");
     }
 }

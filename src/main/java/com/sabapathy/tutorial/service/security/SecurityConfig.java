@@ -37,13 +37,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
 //            .authorizeRequests()
 //                .antMatchers("/h2-console/**").permitAll()
+//                .antMatchers("/tutorial").permitAll()
+//                .antMatchers("/tutorial/register").permitAll()
+//                .antMatchers("/tutorial/login").permitAll()
 //                .antMatchers("/api/rest/home/**").permitAll()
 //                .antMatchers("/api/rest/admin/**").hasRole("ADMIN")
 //                .antMatchers("/api/rest/user/**").hasAnyRole("ADMIN", "USER")
 //                .anyRequest().authenticated().and()
-//                .formLogin().permitAll();
-
-        ;
+//            .formLogin()
+//                .loginPage("/tutorial/login")
+//                .loginProcessingUrl("/tutorial/auth")
+//                .defaultSuccessUrl("/tutorial/main", true)
+//                .failureUrl("/tutorial/home");
+            ;
         // Needed to disable iframe reload in H2
         http.headers().frameOptions().disable();
     }

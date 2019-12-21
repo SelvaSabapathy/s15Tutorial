@@ -1,7 +1,9 @@
 package com.sabapathy.tutorial.service.security;
 
 import com.sabapathy.tutorial.service.entity.User;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,14 +14,10 @@ import java.util.stream.Collectors;
 
 @Slf4j
 
-@Data
+@Data @NoArgsConstructor @AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
     private User user;
-
-    public UserDetailsImpl(User user) {
-        this.user = user;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

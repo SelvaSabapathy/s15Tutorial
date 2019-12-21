@@ -12,7 +12,7 @@
 
         <table align="center">
             <tr>
-                <td style="font-style: italic; color: red;">Tutorial</td>
+                <td style="font-style: italic; color: red;">Tutorial - Main</td>
             </tr>
         </table>
         <table align="center">
@@ -22,19 +22,23 @@
                 <td><a th:href="@{/tutorial/logout}" href="logout">Logout</a></td>
             </tr>
         </table>
-        <table>
-            <tr>
-                <td>Welcome ${name}!</td>
-            </tr>
-            <tr>
-                <td>This is the main page... TUTORIAL contents go here.</td>
-            </tr>
-            <tr>
-            </tr>
-        </table>
         <table align="center">
             <tr>
-                <td style="font-style: italic; color: red;">${message}</td>
+                <td></td>
+                <td></td>
+                <td>Welcome <div th:text="${name}" />!</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>This is the main page... TUTORIAL contents go here.</td>
+                <td></td>
+            </tr>
+            <tr>
+            </tr>
+            <tr>
+                <td></td>
+                <td><a th:href="@{/tutorial}" href="home.html">Home</a></td>
+                <td></td>
             </tr>
         </table>
 

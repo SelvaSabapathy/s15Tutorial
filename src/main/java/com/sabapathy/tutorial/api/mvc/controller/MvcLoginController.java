@@ -4,6 +4,8 @@ import com.sabapathy.tutorial.api.mvc.mapper.MvcUserMapper;
 import com.sabapathy.tutorial.api.mvc.model.MvcLoginRequest;
 import com.sabapathy.tutorial.api.mvc.model.MvcRoleRequest;
 import com.sabapathy.tutorial.api.mvc.model.MvcUserRequest;
+import com.sabapathy.tutorial.api.mvc.model.MvcUserResponse;
+import com.sabapathy.tutorial.service.api.LoginService;
 import com.sabapathy.tutorial.service.api.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class MvcLoginController {
     private MvcUserMapper mvcUserMapper;
 
     @Autowired
+    private LoginService loginService;
+
+    @Autowired
     private UserService userService;
 
     private boolean isCaptchaMatching() {
@@ -41,7 +46,10 @@ public class MvcLoginController {
         Object generatedCaptcha = request.getSession().getAttribute("captchaSecurityCode");
 
         String userEnteredCaptcha = request.getParameter("captcha");
-        return userEnteredCaptcha.equals(generatedCaptcha);
+        boolean successfulMatch = userEnteredCaptcha.equals(generatedCaptcha);
+        log.debug("Captcha is " + (successfulMatch ? "MATCHING" : "NOT matching"));
+
+        return successfulMatch;
     }
 
     @GetMapping("/register")
@@ -54,13 +62,13 @@ public class MvcLoginController {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("message", "Error - " + bindingResult.getFieldErrors().get(0).getDefaultMessage());
             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-            return "redirect:register";
+            return "redirect:/tutorial/register";
         }
 
         if (!isCaptchaMatching()) {
             redirectAttributes.addFlashAttribute("message", "Error - Captcha entered is incorrect");
             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-            return "redirect:register";
+            return "redirect:/tutorial/register";
         }
 
         log.debug("MVC User Request: " + mvcUserRequest);
@@ -71,7 +79,7 @@ public class MvcLoginController {
         redirectAttributes.addFlashAttribute("message", "Successfully registered");
         redirectAttributes.addFlashAttribute("alertClass", "alert-success");
 
-        return "redirect:register";
+        return "redirect:/tutorial/register";
     }
 
     @GetMapping("/login")
@@ -80,11 +88,29 @@ public class MvcLoginController {
     }
 
     @PostMapping(value = "/auth")
-    public String auth(@Valid @ModelAttribute("login") MvcLoginRequest mvcLoginRequest, BindingResult bindingResult) {
+    public String auth(@Valid @ModelAttribute("login") MvcLoginRequest mvcLoginRequest, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         log.debug("MVC Login Request: " + mvcLoginRequest);
 
-//        userService.(mvcUserMapper.toUser(mvcUserRequest));
+        if (!isCaptchaMatching()) {
+            redirectAttributes.addFlashAttribute("message", "Error - Captcha entered is incorrect");
+            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+            return "redirect:/tutorial/login";
+        }
 
-        return "home";
+        try {
+            MvcUserResponse mvcUserResponse = mvcUserMapper.toUserResponse(loginService.authUser(mvcUserMapper.toUser(mvcLoginRequest)));
+            redirectAttributes.addFlashAttribute("name", mvcUserResponse.getName());
+        } catch (Throwable t) {
+            redirectAttributes.addFlashAttribute("message", t.getMessage());
+            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+            return "redirect:/tutorial/login";
+        }
+
+        return "redirect:/tutorial/main";
+    }
+
+    @GetMapping("/logout")
+    public ModelAndView homePage() {
+        return new ModelAndView("logout");
     }
 }
